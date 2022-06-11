@@ -11,7 +11,7 @@
 //#define IMGUI_NEO_SEQUENCER_DISABLE_CPP
 
 // Uncomment line below to force sequencer to use imvector for its internal data storage instead of std::unordered_map
-#define IMGUI_NEO_SEQUENCER_FORCE_IMVECTOR
+//#define IMGUI_NEO_SEQUENCER_FORCE_IMVECTOR
 
 
 #if defined(__cplusplus) && !defined(IMGUI_NEO_SEQUENCER_DISABLE_CPP)
