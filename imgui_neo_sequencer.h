@@ -6,7 +6,19 @@
 #define IMGUI_NEO_SEQUENCER_H
 
 #include "imgui.h"
+
+// Uncomment line below to disable c++ support explicitly
+//#define IMGUI_NEO_SEQUENCER_DISABLE_CPP
+
+// Uncomment line below to force sequencer to use imvector for its internal data storage instead of std::unordered_map
+#define IMGUI_NEO_SEQUENCER_FORCE_IMVECTOR
+
+
+#if defined(__cplusplus) && !defined(IMGUI_NEO_SEQUENCER_DISABLE_CPP)
 #include <vector>
+#else
+#define IMGUI_NEO_SEQUENCER_FORCE_IMVECTOR
+#endif
 
 typedef int ImGuiNeoSequencerFlags;
 typedef int ImGuiNeoSequencerCol;

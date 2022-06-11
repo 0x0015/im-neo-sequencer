@@ -7,9 +7,9 @@
 #include "imgui_internal.h"
 #include "imgui_neo_internal.h"
 
-#include <stack>
-#include <iostream>
+#ifndef IMGUI_NEO_SEQUENCER_FORCE_IMVECTOR
 #include <unordered_map>
+#endif
 
 namespace ImGui {
 	struct ImGuiNeoSequencerInternalData {
@@ -48,7 +48,7 @@ namespace ImGui {
 	// Height of timeline right now
 	static float currentTimelineHeight = 0.0f;
 
-	// Current active sequencer
+	// Current active sequencer (ID when hashmap is used, Index if ImVector is used)
 	static ImGuiID currentSequencer;
 
 	// Current timeline depth, used for offset of label
@@ -57,9 +57,27 @@ namespace ImGui {
 	static ImVector<ImGuiColorMod> sequencerColorStack;
 
 	// Data of all sequencers, this is main c++ part and I should create C alternative or use imgui ImVector or something
+#ifdef IMGUI_NEO_SEQUENCER_FORCE_IMVECTOR
+	static ImVector<ImGuiNeoSequencerInternalData> sequencerData;
+	static ImVector<ImGuiID> sequencerIds;
+#else
 	static std::unordered_map<ImGuiID, ImGuiNeoSequencerInternalData> sequencerData;
+#endif
 
 	///////////// STATIC HELPERS ///////////////////////
+
+	static ImGuiNeoSequencerInternalData & getContext(const ImGuiID & stackID ) {
+		for(uint32_t i = 0; i < sequencerIds.size(); i++) {
+			if(sequencerIds[i] == stackID) {
+				return sequencerData[i];
+			}
+		}
+		// New context
+		sequencerIds.push_back(stackID);
+		sequencerData.push_back({});
+
+		return sequencerData[sequencerData.size() - 1];
+	}
 
 	static float getPerFrameWidth(ImGuiNeoSequencerInternalData& context) {
 		return GetPerFrameWidth(context.Size.x, context.ValuesWidth, context.EndFrame, context.StartFrame,
@@ -436,7 +454,7 @@ namespace ImGui {
 
 		inSequencer = true;
 
-		auto& context = sequencerData[id];
+		auto& context = getContext(id);
 
 		auto realSize = ImFloor(size);
 		if (realSize.x <= 0.0f)
@@ -455,9 +473,17 @@ namespace ImGui {
 		context.EndFrame = *endFrame;
 		context.Size = realSize;
 
-
+#ifdef IMGUI_NEO_SEQUENCER_FORCE_IMVECTOR
+		auto realId = window->IDStack[window->IDStack.size() - 1];
+		for(uint32_t i = 0; i < sequencerIds.size(); i++) {
+			if(sequencerIds[i] == realId) {
+				currentSequencer = i;
+				break;
+			}
+		}
+#else
 		currentSequencer = window->IDStack[window->IDStack.size() - 1];
-
+#endif
 
 		RenderNeoSequencerBackground(GetStyleNeoSequencerColorVec4(ImGuiNeoSequencerCol_Bg), context.StartCursor,
 			context.Size,
@@ -496,8 +522,11 @@ namespace ImGui {
 
 	void EndNeoSequencer() {
 		IM_ASSERT(inSequencer && "Called end sequencer when BeginSequencer didnt return true or wasn't called at all!");
+#ifdef IMGUI_NEO_SEQUENCER_FORCE_IMVECTOR
+		IM_ASSERT(currentSequencer >= 0 && currentSequencer < sequencerData.size() && "Ended sequencer has no context!");
+#else
 		IM_ASSERT(sequencerData.count(currentSequencer) != 0 && "Ended sequencer has no context!");
-
+#endif
 		auto& context = sequencerData[currentSequencer];
 		//auto &imStyle = GetStyle();
 
