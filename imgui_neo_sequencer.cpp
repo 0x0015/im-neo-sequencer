@@ -1,7 +1,9 @@
 //
 // Created by Matty on 2022-01-28.
 //
+#ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
+#endif
 
 #include "imgui_neo_sequencer.h"
 #include "imgui_internal.h"
@@ -160,7 +162,7 @@ namespace ImGui
                 timelineXmin + context.Size.x - context.ValuesWidth
         };
 
-        const auto hovered = ItemHoverable(pointerRect, GetCurrentWindow()->GetID("##_top_selector_neo"));
+        const auto hovered = ItemHoverable(pointerRect, GetCurrentWindow()->GetID("##_top_selector_neo"), ImGuiItemFlags_None);
 
         context.CurrentFrameColor = GetStyleNeoSequencerColorVec4(ImGuiNeoSequencerCol_FramePointer);
 
@@ -213,7 +215,7 @@ namespace ImGui
         currentTimelineHeight = 0.0f;
     }
 
-    static ImColor getKeyframeColor(ImGuiNeoSequencerInternalData& context, bool hovered, bool inSelection)
+    static ImColor getKeyframeColor([[maybe_unused]] ImGuiNeoSequencerInternalData& context, bool hovered, bool inSelection)
     {
         if (inSelection)
         {
@@ -369,7 +371,7 @@ namespace ImGui
 
         const ImGuiID id = getKeyframeID(frame);
 
-        bool hovered = ItemHoverable(bb, id);
+        bool hovered = ItemHoverable(bb, id, ImGuiItemFlags_None);
 
         if (context.SelectionEnabled && context.Selection.contains(id) &&
             (context.StateOfSelection != SelectionState::Selecting))
@@ -575,7 +577,7 @@ namespace ImGui
 
         const auto viewWidth = (uint32_t) ((float) totalFrames / context.Zoom);
 
-        const bool hovered = ItemHoverable(bb, GetCurrentWindow()->GetID("##zoom_slider"));
+        const bool hovered = ItemHoverable(bb, GetCurrentWindow()->GetID("##zoom_slider"), ImGuiItemFlags_None);
 
         if (hovered)
         {
