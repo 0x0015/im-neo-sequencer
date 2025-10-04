@@ -657,7 +657,7 @@ namespace ImGui
 
             char overlayTextBuffer[128];
 
-            snprintf(overlayTextBuffer, sizeof(overlayTextBuffer), "%i - %i", viewStart, viewEnd);
+            snprintf(overlayTextBuffer, sizeof(overlayTextBuffer), "%.2lf - %.2lf", (double)viewStart / ImGuiNeoNumberMultiplier, (double)viewEnd / ImGuiNeoNumberMultiplier);
 
             const auto overlaySize = CalcTextSize(overlayTextBuffer);
 

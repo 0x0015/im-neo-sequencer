@@ -6,6 +6,7 @@
 
 #include "imgui_neo_internal.h"
 #include "imgui_internal.h"
+#include "imgui_neo_sequencer.h"
 #include <cstdint>
 
 namespace ImGui {
@@ -79,7 +80,7 @@ namespace ImGui {
 
                 if(drawFrameText && secondaryFrame) {
                     char text[10];
-                    const auto printRes = snprintf(text, sizeof(text), "%i", viewStart + i);
+                    const auto printRes = snprintf(text, sizeof(text), "%.2lf", (double)(viewStart + i) / ImGuiNeoNumberMultiplier);
                     if(printRes > 0) {
                         drawList->AddText(NULL, 0, {p1.x + 2.0f, barArea.Min.y }, IM_COL32_WHITE,text);
                     }

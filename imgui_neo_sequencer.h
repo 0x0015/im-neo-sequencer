@@ -9,10 +9,11 @@
 #include <vector>
 #include <stdint.h>
 
-typedef int ImGuiNeoSequencerFlags;
-typedef int ImGuiNeoSequencerCol;
-typedef int ImGuiNeoTimelineFlags;
-typedef int ImGuiNeoTimelineIsSelectedFlags;
+using ImGuiNeoSequencerFlags = int;
+using ImGuiNeoSequencerCol = int;
+using ImGuiNeoTimelineFlags = int;
+using ImGuiNeoTimelineIsSelectedFlags = int;
+inline double ImGuiNeoNumberMultiplier = 100; //assume all ints are doubles multiplied by 100
 
 // Flags for ImGui::BeginNeoSequencer()
 enum ImGuiNeoSequencerFlags_
@@ -98,7 +99,7 @@ struct ImGuiNeoSequencerStyle {
 };
 
 namespace ImGui {
-    typedef int32_t FrameIndexType;
+    using FrameIndexType = int32_t;
 
     IMGUI_API const ImVec4& GetStyleNeoSequencerColorVec4(ImGuiNeoSequencerCol idx);
     IMGUI_API ImGuiNeoSequencerStyle& GetNeoSequencerStyle();
