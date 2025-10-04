@@ -9,14 +9,13 @@
 #include <vector>
 #include <stdint.h>
 
-typedef int ImGuiNeoSequencerFlags;
-typedef int ImGuiNeoSequencerCol;
-typedef int ImGuiNeoTimelineFlags;
-typedef int ImGuiNeoTimelineIsSelectedFlags;
+using ImGuiNeoSequencerFlags = int;
+using ImGuiNeoSequencerCol = int;
+using ImGuiNeoTimelineFlags = int;
+using ImGuiNeoTimelineIsSelectedFlags = int;
 
 // Flags for ImGui::BeginNeoSequencer()
-enum ImGuiNeoSequencerFlags_
-{
+enum ImGuiNeoSequencerFlags_{
     ImGuiNeoSequencerFlags_None                 = 0     ,
     ImGuiNeoSequencerFlags_AllowLengthChanging  = 1 << 0, // Allows changing length of sequence
     ImGuiNeoSequencerFlags_EnableSelection      = 1 << 1, // Enables selection of keyframes
@@ -31,22 +30,19 @@ enum ImGuiNeoSequencerFlags_
 };
 
 // Flags for ImGui::BeginNeoTimeline()
-enum ImGuiNeoTimelineFlags_
-{
+enum ImGuiNeoTimelineFlags_{
     ImGuiNeoTimelineFlags_None                 = 0     ,
     ImGuiNeoTimelineFlags_AllowFrameChanging   = 1 << 0,
     ImGuiNeoTimelineFlags_Group                = 1 << 1,
 };
 
 // Flags for ImGui::IsNeoTimelineSelected()
-enum ImGuiNeoTimelineIsSelectedFlags_
-{
+enum ImGuiNeoTimelineIsSelectedFlags_{
     ImGuiNeoTimelineIsSelectedFlags_None            = 0     ,
     ImGuiNeoTimelineIsSelectedFlags_NewlySelected   = 1 << 0,
 };
 
-enum ImGuiNeoSequencerCol_
-{
+enum ImGuiNeoSequencerCol_{
     ImGuiNeoSequencerCol_Bg,
     ImGuiNeoSequencerCol_TopBarBg,
     ImGuiNeoSequencerCol_SelectedTimeline,
@@ -98,7 +94,7 @@ struct ImGuiNeoSequencerStyle {
 };
 
 namespace ImGui {
-    typedef int32_t FrameIndexType;
+    using FrameIndexType = double;
 
     IMGUI_API const ImVec4& GetStyleNeoSequencerColorVec4(ImGuiNeoSequencerCol idx);
     IMGUI_API ImGuiNeoSequencerStyle& GetNeoSequencerStyle();
@@ -118,7 +114,7 @@ namespace ImGui {
 
     // Fully customizable timeline with per key callback
     IMGUI_API bool BeginNeoTimelineEx(const char* label, bool * open = nullptr, ImGuiNeoTimelineFlags flags = ImGuiNeoTimelineFlags_None);
-    IMGUI_API void NeoKeyframe(int32_t* value);
+    IMGUI_API void NeoKeyframe(FrameIndexType* value);
 
     IMGUI_API bool IsNeoKeyframeHovered();
     IMGUI_API bool IsNeoKeyframeSelected();
@@ -148,7 +144,7 @@ namespace ImGui {
 
 #ifdef __cplusplus
     // C++ helper
-    IMGUI_API bool BeginNeoTimeline(const char* label,std::vector<int32_t> & keyframes ,bool * open = nullptr, ImGuiNeoTimelineFlags flags = ImGuiNeoTimelineFlags_None);
+    IMGUI_API bool BeginNeoTimeline(const char* label,std::vector<FrameIndexType> & keyframes ,bool * open = nullptr, ImGuiNeoTimelineFlags flags = ImGuiNeoTimelineFlags_None);
 #endif
 }
 

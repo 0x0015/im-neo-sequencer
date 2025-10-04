@@ -17,13 +17,13 @@ namespace ImGui
     struct ImGuiNeoTimelineKeyframes
     {
         ImGuiID TimelineID;
-        ImVector<int32_t> KeyframesToDelete;
+        ImVector<FrameIndexType> KeyframesToDelete;
     };
 
     // Internal struct holding how many times was keyframe on certain frame rendered, used as offset for duplicates
     struct ImGuiNeoKeyframeDuplicate
     {
-        int32_t Frame;
+        FrameIndexType Frame;
         uint32_t Count;
     };
 
@@ -75,7 +75,7 @@ namespace ImGui
         SelectionState StateOfSelection = SelectionState::Idle;
         ImVec2 DraggingMouseStart = {0, 0};
         bool StartDragging = true;
-        ImVector<int32_t> DraggingSelectionStart; // Contains start values of all selection elements
+        ImVector<FrameIndexType> DraggingSelectionStart; // Contains start values of all selection elements
         bool DraggingEnabled = true;
         bool SelectionEnabled = true;
         bool IsSelectionRightClicked = false;
@@ -186,7 +186,7 @@ namespace ImGui
 
                 const auto frameViewVal = (float) context.StartFrame + (clamped * (float) viewSize);
 
-                const auto finalFrame = (FrameIndexType) round(frameViewVal) + context.OffsetFrame;
+                const auto finalFrame = (FrameIndexType) frameViewVal + context.OffsetFrame;
 
                 context.CurrentFrameColor = GetStyleNeoSequencerColorVec4(ImGuiNeoSequencerCol_FramePointerPressed);
 
@@ -228,7 +228,7 @@ namespace ImGui
                ColorConvertFloat4ToU32(GetStyleNeoSequencerColorVec4(ImGuiNeoSequencerCol_Keyframe));
     }
 
-    static void addKeyframeToDeleteData(int32_t value, ImGuiNeoSequencerInternalData& context, const ImGuiID timelineId)
+    static void addKeyframeToDeleteData(FrameIndexType value, ImGuiNeoSequencerInternalData& context, const ImGuiID timelineId)
     {
         bool foundTimeline = false;
         for (auto&& val: context.SelectionData)
@@ -252,7 +252,7 @@ namespace ImGui
     }
 
     static bool
-    getKeyframeInSelection(int32_t value, ImGuiID id, ImGuiNeoSequencerInternalData& context, const ImRect bb)
+    getKeyframeInSelection(FrameIndexType value, ImGuiID id, ImGuiNeoSequencerInternalData& context, const ImRect bb)
     {
         //TODO(matej.vrba): This is kinda slow, it works for smaller data sample, but for bigger sample it should be changed to hashset
         const ImGuiID timelineId = context.TimelineStack.back();
@@ -330,12 +330,12 @@ namespace ImGui
         return overlaps;
     }
 
-    static ImGuiID getKeyframeID(int32_t* frame)
+    static ImGuiID getKeyframeID(FrameIndexType* frame)
     {
         return GetCurrentWindow()->GetID(frame);
     }
 
-    static bool createKeyframe(int32_t* frame)
+    static bool createKeyframe(FrameIndexType* frame)
     {
         const auto& imStyle = GetStyle();
         auto& context = sequencerData[currentSequencer];
@@ -388,7 +388,7 @@ namespace ImGui
             if (context.StateOfSelection == SelectionState::Dragging)
             {
                 ImGuiID* it = context.Selection.find(id);
-                int32_t index = context.Selection.index_from_ptr(it);
+                FrameIndexType index = context.Selection.index_from_ptr(it);
 
                 if (context.DraggingSelectionStart.size() < index + 1 || context.DraggingSelectionStart[index] == -1)
                 {
@@ -401,8 +401,7 @@ namespace ImGui
                 }
                 float mouseDelta = GetMousePos().x - context.DraggingMouseStart.x;
 
-                auto offsetA = int32_t(
-                        mouseDelta / (context.Size.x / (float) context.EndFrame - (float) context.StartFrame));
+                auto offsetA = int32_t(mouseDelta / (context.Size.x / (float) context.EndFrame - (float) context.StartFrame));
 
                 *frame = context.DraggingSelectionStart[index] + offsetA;
             }
@@ -534,7 +533,7 @@ namespace ImGui
         //    endFrameVal = (int32_t) *end;
 
         if (endFrameVal <= startFrameVal)
-            endFrameVal = (int32_t) *end;
+            endFrameVal = (FrameIndexType) *end;
 
         *start = startFrameVal;
         *end = endFrameVal;
@@ -588,7 +587,7 @@ namespace ImGui
             const auto newZoomWidth = (FrameIndexType) ceil((float) totalFrames / (context.Zoom));
 
             if (*start + context.OffsetFrame + newZoomWidth > *end)
-                context.OffsetFrame = ImMax(0U, totalFrames - viewWidth);
+                context.OffsetFrame = ImMax((FrameIndexType)0, totalFrames - viewWidth);
         }
 
         if (context.HoldingZoomSlider)
@@ -657,7 +656,7 @@ namespace ImGui
 
             char overlayTextBuffer[128];
 
-            snprintf(overlayTextBuffer, sizeof(overlayTextBuffer), "%i - %i", viewStart, viewEnd);
+            snprintf(overlayTextBuffer, sizeof(overlayTextBuffer), "%lf - %lf", viewStart, viewEnd);
 
             const auto overlaySize = CalcTextSize(overlayTextBuffer);
 
@@ -1027,9 +1026,9 @@ namespace ImGui
 #ifdef __cplusplus
 
     bool
-    BeginNeoTimeline(const char* label, std::vector<int32_t>& keyframes, bool* open, ImGuiNeoTimelineFlags flags)
+    BeginNeoTimeline(const char* label, std::vector<FrameIndexType>& keyframes, bool* open, ImGuiNeoTimelineFlags flags)
     {
-        std::vector<int32_t*> c_keyframes{keyframes.size()};
+        std::vector<FrameIndexType*> c_keyframes{keyframes.size()};
         for (uint32_t i = 0; i < keyframes.size(); i++)
             c_keyframes[i] = &keyframes[i];
 
@@ -1219,7 +1218,7 @@ namespace ImGui
         context.TimelineStack.pop_back();
     }
 
-    void NeoKeyframe(int32_t* value)
+    void NeoKeyframe(FrameIndexType* value)
     {
         IM_ASSERT(inSequencer && "Not in active sequencer!");
         auto& context = sequencerData[currentSequencer];
